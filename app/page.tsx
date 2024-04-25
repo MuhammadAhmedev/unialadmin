@@ -39,9 +39,9 @@ const Home = () => {
         <ul>
           {data?.map((item, index) => (
             <>
-              <li key={index}>id: {item?.id}</li>
+              <li>id: {item?.id}</li>
               <li>Created At: {item?.created_at}</li>
-              <li key={index}>{JSON.stringify(item?.block)}</li>
+              <li>{JSON.stringify(item?.block)}</li>
               {/* <ul>
                 {item?.block?.blocks?.map((key, index) => (
                   <li key={index}>

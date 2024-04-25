@@ -18,8 +18,7 @@ export default function Editor() {
       const Checklist = (await import("@editorjs/checklist")).default;
       const Embed = (await import("@editorjs/embed")).default;
       const Quote = (await import("@editorjs/quote")).default;
-      const Paragraph = (await import("@editorjs/paragraph")).default;
-      const ImageTool = (await import("@editorjs/image")).default;
+
 
       const tools = {
         header: {
@@ -34,7 +33,6 @@ export default function Editor() {
         checklist: { class: Checklist, inlineToolbar: true },
         embed: Embed,
         quote: Quote,
-        paragraph: { class: Paragraph, inlineToolbar: true },
       };
 
       const editorInstance = new EditorJS({
@@ -45,8 +43,8 @@ export default function Editor() {
         tools,
       });
 
-      editorRef.current = editorInstance;
       setEditorLoaded(true);
+      editorRef.current = editorInstance;
     };
 
     if (typeof window !== "undefined" && !editorLoaded) {
@@ -60,20 +58,22 @@ export default function Editor() {
     };
   }, [editorLoaded]);
 
+
+
  const save = async () => {
    if (editorLoaded && editorRef.current) {
      try {
        setLoading(true);
        const outputData = await editorRef.current.save();
        console.log("Output Data:", outputData); // Check if outputData is correct
-       const saveInDb = await fetch("/api/post", {
-         method: "POST",
-         headers: {
-           "Content-Type": "application/json",
-         },
-         body: JSON.stringify(outputData),
-       });
-       console.log("Save In DB Response:", saveInDb); // Check the response from the API
+      //  const saveInDb = await fetch("/api/post", {
+      //    method: "POST",
+      //    headers: {
+      //      "Content-Type": "application/json",
+      //    },
+      //    body: JSON.stringify(outputData),
+      //  });
+      //  console.log("Save In DB Response:", saveInDb); // Check the response from the API
      } catch (error) {
        console.error("Error while saving editor content:", error);
      } finally {
