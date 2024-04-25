@@ -1,27 +1,29 @@
-"use client"
 import React, { useRef, useEffect, useState } from "react";
 
-export default function Editor() {
+export default function Editor({ initialContent }) {
   const [editorLoaded, setEditorLoaded] = useState(false);
   const editorRef = useRef(null);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
-  const initializeEditor = async () => {
-    const EditorJS = (await import("@editorjs/editorjs")).default;
-    const Header = (await import("@editorjs/header")).default;
-    const Table = (await import("@editorjs/table")).default;
-    const List = (await import("@editorjs/list")).default;
-    const LinkTool = (await import("@editorjs/link")).default;
-    const RawTool = (await import("@editorjs/raw")).default;
-    const SimpleImage = (await import("@editorjs/simple-image")).default;
-    const Checklist = (await import("@editorjs/checklist")).default;
-    const Embed = (await import("@editorjs/embed")).default;
-    const Quote = (await import("@editorjs/quote")).default;
-  
+  useEffect(() => {
+    const initializeEditor = async () => {
+      const EditorJS = (await import("@editorjs/editorjs")).default;
+      const Header = (await import("@editorjs/header")).default;
+      const Table = (await import("@editorjs/table")).default;
+      const List = (await import("@editorjs/list")).default;
+      const LinkTool = (await import("@editorjs/link")).default;
+      const RawTool = (await import("@editorjs/raw")).default;
+      const SimpleImage = (await import("@editorjs/simple-image")).default;
+      const Checklist = (await import("@editorjs/checklist")).default;
+      const Embed = (await import("@editorjs/embed")).default;
+      const Quote = (await import("@editorjs/quote")).default;
+
+      // Import other tools...
+
       const tools = {
         header: {
           class: Header,
-          inlineToolbar: [ "link", "bold", "italic"],
+          inlineToolbar: ["link", "bold", "italic"],
         },
         table: Table,
         list: List,
@@ -33,63 +35,39 @@ export default function Editor() {
         quote: Quote,
       };
 
-  if (!editorRef.current) {
-    const editor = new EditorJS({
-      holder: "editorjs",
-      autofocus: true,
-      placeholder: "Let`s write an awesome story!",
-      inlineToolbar: true,
-      tools,
-    });
-    editorRef.current = editor; 
-  } // setEditorLoaded(true);
-    // editorRef.current = editorInstance;
-  };
+      const editorInstance = new EditorJS({
+        holder: "editorjs",
+        autofocus: true,
+        placeholder: "Let`s write an awesome story!",
+        inlineToolbar: true,
+        tools,
+        data: initialContent
+          ? {
+              time: initialContent.time,
+              blocks: initialContent.block.blocks,
+            }
+          : ({} as any),
+      });
 
-   useEffect(() => {
-     const init = async () => {
-       await initializeEditor();
-     };
-     if (editorLoaded) {
-       init();
-       return () => {
-         if (editorRef.current) {
-           editorRef.current.destroy();
-         }
-       };
-     }
-   }, [editorLoaded]);
+      editorRef.current = editorInstance;
+      setEditorLoaded(true);
+    };
 
-  useEffect(()=>{
- if (typeof window !== "undefined") {
-   setEditorLoaded(true);
- }
-  },[])
+    initializeEditor();
 
- 
+    return () => {
+      if (editorRef.current) {
+        editorRef.current.destroy();
+      }
+    };
+  }, [initialContent]);
 
-  // useEffect(() => {
-
-  //   if (typeof window !== "undefined" && !editorLoaded) {
-  //     setEditorLoaded(true)
-  //   }
-
-  //   return () => {
-  //     if (editorRef.current && editorRef.current.destroy) {
-  //       editorRef.current.destroy();
-  //     }
-  //   };
-  // }, [editorLoaded]);
-
-
-
-const save = async () => {
-  try {
-    setLoading(true)
-    if (editorRef.current) {
-      editorRef.current.save().then(async (outputData) => {
-        // Define the callback function as async
-        console.log("outputData", outputData);
+  const save = async () => {
+    try {
+      setLoading(true);
+      if (editorRef.current) {
+        const outputData = await editorRef.current.save();
+        // Save data to the database
         try {
           const saveInDb = await fetch("/api/post", {
             method: "POST",
@@ -105,18 +83,15 @@ const save = async () => {
             error
           );
         }
-      });
-    } else {
-      console.log("Editor is not initialized");
+      } else {
+        console.log("Editor is not initialized");
+      }
+    } catch (error) {
+      console.error("Error while saving editor content:", error);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Error while saving editor content:", error);
-  } finally {
-    setLoading(false);
-  }
-};
-
-
+  };
 
   return (
     <div className="flex justify-center flex-col mx-auto w-[70%]">

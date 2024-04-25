@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 
 const Home = () => {
    const [data, setData] = useState([]);
+    const [initialContent, setInitialContent] = useState(null);
+
    const fetchData = async () => {
      try {
        const response = await fetch("/api/post", {
@@ -26,22 +28,33 @@ const Home = () => {
     useEffect(() => {
       fetchData();
     }, []);
+
+
+    const handleItemClick = (item) => {
+      setInitialContent(item); 
+    };
+
   return (
     <div className="my-[50px] w-full">
       <h1 className="text-red-700 font-bold text-[30px] text-center">
         Unial Admin
       </h1>
       <div className="my-[50px]">
-        <Editor />
+        <Editor initialContent={initialContent} />
       </div>
       <div className="my-[50px]">
         {/* Render your data here */}
         <ul>
           {data?.map((item, index) => (
             <>
-              <li>id: {item?.id}</li>
-              <li>Created At: {item?.created_at}</li>
-              <li>{JSON.stringify(item?.block)}</li>
+              <li
+                className="my-3 cursor-pointer"
+                onClick={() => handleItemClick(item)}
+              >
+                Page: {item?.id}
+              </li>
+              {/* <li>Created At: {item?.created_at}</li>
+              <li>{JSON.stringify(item?.block)}</li> */}
               {/* <ul>
                 {item?.block?.blocks?.map((key, index) => (
                   <li key={index}>
