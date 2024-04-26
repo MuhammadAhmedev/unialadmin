@@ -27,11 +27,30 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const results = await sql`SELECT * FROM Pages;`;
     return NextResponse.json({ results }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 500 });
+  }
+}
+
+
+export async function PUT(request: Request) {
+  try {
+    const { id, block } = await request.json();
+    // Update the object in the Pages table with the given id
+    await sql`
+      UPDATE Pages
+      SET block = ${JSON.stringify(block)}
+      WHERE id = ${id};
+    `;
+    return NextResponse.json(
+      { message: `Data with id ${id} updated successfully.` },
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
