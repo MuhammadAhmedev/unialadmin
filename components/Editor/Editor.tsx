@@ -31,7 +31,7 @@ export default function Editor({
       const Checklist = (await import("@editorjs/checklist")).default;
       const Embed = (await import("@editorjs/embed")).default;
       const Quote = (await import("@editorjs/quote")).default;
-      const Paragraph = (await import("@editorjs/paragraph")).default;
+   
 
       const tools = {
         header: Header,
@@ -56,11 +56,9 @@ export default function Editor({
       const editorInstance = new EditorJS({
         holder: "editorjs",
         autofocus: true,
-        // paragraph: false,
         placeholder: "Let`s write an awesome story!",
         inlineToolbar: true,
         tools,
-        // defaultBlock: "Text",
         data: initialContent
           ? {
               time: initialContent.block.time,
@@ -123,7 +121,6 @@ export default function Editor({
       setLoading(false);
     }
   };
-
 
   const UpdateData = async () => {
      try {

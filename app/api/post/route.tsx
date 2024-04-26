@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 }
 export async function GET() {
   try {
-    const results = await sql`SELECT * FROM Pages;`;
+    const results = await sql`SELECT * FROM Pages ORDER BY id ASC;`;
     return NextResponse.json({ results }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 500 });
