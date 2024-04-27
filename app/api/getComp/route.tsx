@@ -1,5 +1,7 @@
 import { sql } from "@vercel/postgres";
 import { NextResponse } from "next/server";
+export const dynamic = "force-dynamic"
+export const revalidate = 10
 export async function GET(req: any) {
   try {
     const componentName = req.nextUrl.searchParams.get("componentName");
